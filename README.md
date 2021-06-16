@@ -13,3 +13,5 @@ Three videos (in french) are available. They present:
 - and a [short code review](https://drive.google.com/file/d/1jxYNfJdtd4r_pDbOthra360ei8Z17tX_/preview) .
 
 For french native speaker that wants to follow the course. The course web page is available [here](https://hackmd.diverse-team.fr/s/SJqu5DjSD).
+
+This project was made with the collaboration of 4 personnes based on the project : https://github.com/barais/doodlestudent
