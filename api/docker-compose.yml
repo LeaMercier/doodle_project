@@ -1,0 +1,131 @@
+version: '3'
+services:
+   api-gateway:
+      build: ./api-gateway
+      ports:
+         - 8080:8080
+
+   participant-db:
+      image: postgres
+      container_name: participant-db
+      restart: always
+      environment: 
+         - POSTGRES_USER=tlc
+         - POSTGRES_PASSWORD=tlc
+         - POSTGRES_DB=tlc_user
+      ports:
+         - 5431:5432
+      volumes: 
+         - ./participant/participant_db.sql:/docker-entrypoint-initdb.d/participant_db.sql
+
+
+   participant:
+      build:
+         context: ./participant/
+         dockerfile: src/main/docker/Dockerfile.jvm
+      ports:
+         - 8081:8081
+      depends_on: 
+         - participant-db
+      links:
+         - participant-db
+      environment:
+         - MYAPP_JDBC_URL=jdbc:postgresql://participant-db:5432/tlc_user
+         - MYAPP_JDBC_USER=tlc
+         - MYAPP_JDBC_PASS=tlc
+      
+   
+   planning-db:
+      image: postgres
+      container_name: planning-db
+      restart: always
+      environment: 
+         - POSTGRES_USER=tlc
+         - POSTGRES_PASSWORD=tlc
+         - POSTGRES_DB=tlc_planning
+      ports:
+         - 5434:5432
+      volumes: 
+         - ./planning/planning_db.sql:/docker-entrypoint-initdb.d/planning_db.sql
+
+   planning:
+      build:
+         context: ./planning/ 
+         dockerfile: src/main/docker/Dockerfile.jvm
+      ports:
+         - 8082:8082
+      depends_on: 
+         - planning-db
+      links:
+         - planning-db
+      environment:
+         - MYAPP_JDBC_URL=jdbc:postgresql://planning-db:5432/tlc_planning
+         - MYAPP_JDBC_USER=tlc
+         - MYAPP_JDBC_PASS=tlc
+
+   poll-db:
+      image: postgres
+      container_name: poll-db
+      restart: always
+      environment: 
+         - POSTGRES_USER=tlc
+         - POSTGRES_PASSWORD=tlc
+         - POSTGRES_DB=tlc_poll
+      ports:
+         - 5433:5432
+      volumes: 
+         - ./poll/poll_db.sql:/docker-entrypoint-initdb.d/poll_db.sql
+
+   poll:
+      build:
+         context: ./poll/ 
+         dockerfile: src/main/docker/Dockerfile.jvm
+      ports:
+         - 8083:8083
+      depends_on: 
+         - poll-db
+      links:
+         - poll-db
+      environment:
+         - MYAPP_JDBC_URL=jdbc:postgresql://poll-db:5432/tlc_poll
+         - MYAPP_JDBC_USER=tlc
+         - MYAPP_JDBC_PASS=tlc
+
+   pad:
+      build:
+         context: ./pad/ 
+         dockerfile: src/Docker/Dockerfile
+      ports:
+         - 8085:8085
+      depends_on: 
+         - pad-db
+      links:
+         - pad-db
+      environment:
+         - MYAPP_JDBC_URL=jdbc:postgresql://pad-db:5432/tlc_pad
+         - MYAPP_JDBC_USER=tlc
+         - MYAPP_JDBC_PASS=tlc
+
+   pad-db:
+      image: postgres
+      container_name: pad-db
+      restart: always
+      environment: 
+         - POSTGRES_USER=tlc
+         - POSTGRES_PASSWORD=tlc
+         - POSTGRES_DB=tlc_pad
+      ports:
+         - 5500:5432
+
+   etherpad:
+      image: etherpad/etherpad:stable
+      ports:
+         - "9001:9001"
+      volumes:
+         - ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+
+   mail:
+      image: bytemark/smtp
+      restart: always
+      ports:
+         - "2525:25"

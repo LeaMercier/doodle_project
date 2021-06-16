@@ -1,0 +1,14 @@
+@startuml services
+
+Client --> [ApiGateway]
+
+[ApiGateway] --> [UserService]
+[ApiGateway] --> [MealService]
+[ApiGateway] --> [ChoiseService]
+
+[ApiGateway] --> [PollService] 
+[ApiGateway] --> [CommentService]
+[ApiGateway] --> [EmailService]
+[ApiGateway] --> [ICSService]
+
+@enduml
